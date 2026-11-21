@@ -1,53 +1,35 @@
 import { useState } from 'react';
-
-const features = [
-  {
-    icon: '🧍',
-    title: 'Avatar com suas medidas',
-    text: 'Informe altura, peso e medidas básicas e gere um avatar 3D fiel ao seu corpo.',
-  },
-  {
-    icon: '👕',
-    title: 'Caimento realista',
-    text: 'Simulação de tecido que mostra onde a peça fica justa, folgada ou no ponto certo.',
-  },
-  {
-    icon: '🔄',
-    title: 'Visão 360°',
-    text: 'Gire, aproxime e veja a roupa de todos os ângulos antes de decidir.',
-  },
-  {
-    icon: '📏',
-    title: 'Tamanho recomendado',
-    text: 'Sugestão automática do tamanho ideal para cada marca e modelagem.',
-  },
-];
+import FitCard from './FitCard.jsx';
 
 const steps = [
-  { n: '1', title: 'Crie seu avatar', text: 'Preencha suas medidas em menos de um minuto.' },
-  { n: '2', title: 'Escolha a peça', text: 'Navegue pelo catálogo das lojas parceiras.' },
-  { n: '3', title: 'Experimente em 3D', text: 'Veja o caimento e compre com confiança.' },
+  {
+    n: '01',
+    title: 'Suas medidas',
+    text: 'Altura, peso e seis medidas básicas. Leva menos de um minuto e gera um avatar com as proporções do seu corpo.',
+  },
+  {
+    n: '02',
+    title: 'A peça',
+    text: 'Cada roupa é modelada a partir da ficha técnica da marca: tecido, elasticidade e grade de tamanhos.',
+  },
+  {
+    n: '03',
+    title: 'A prova',
+    text: 'Você vê onde a peça fica justa, onde sobra e qual tamanho veste melhor. Em 360°, antes de pagar.',
+  },
 ];
 
-function Mannequin() {
-  return (
-    <div className="stage" aria-hidden="true">
-      <div className="ring" />
-      <div className="mannequin">
-        <div className="head" />
-        <div className="torso">
-          <div className="shirt" />
-        </div>
-        <div className="arms" />
-        <div className="legs">
-          <span />
-          <span />
-        </div>
-      </div>
-      <div className="floor" />
-    </div>
-  );
-}
+const legend = [
+  { fit: 'tight', name: 'Justo', text: 'O tecido tensiona. Pode marcar ou limitar movimento.' },
+  { fit: 'ideal', name: 'Ideal', text: 'Dentro da folga prevista pela modelagem.' },
+  { fit: 'loose', name: 'Folgado', text: 'Sobra tecido além do que o corte pede.' },
+];
+
+const forStores = [
+  { title: 'Menos trocas por tamanho', text: 'O cliente escolhe o tamanho vendo o caimento, e não adivinhando pela tabela.' },
+  { title: 'Integração ao catálogo', text: 'Um script na página de produto. Sem mudar o checkout nem a plataforma.' },
+  { title: 'Dados de modelagem', text: 'Saiba quais peças vestem pequeno ou grande e ajuste a grade com base em uso real.' },
+];
 
 function Waitlist() {
   const [email, setEmail] = useState('');
@@ -73,18 +55,22 @@ function Waitlist() {
 
   return (
     <form className="waitlist" onSubmit={handleSubmit}>
-      <input
-        type="email"
-        required
-        placeholder="seu@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        aria-label="E-mail"
-      />
-      <button type="submit" disabled={status.type === 'loading'}>
-        {status.type === 'loading' ? 'Enviando...' : 'Quero acesso antecipado'}
-      </button>
-      {status.message && <p className={`form-msg ${status.type}`}>{status.message}</p>}
+      <label htmlFor="email" className="label">Seu e-mail</label>
+      <div className="waitlist-row">
+        <input
+          id="email"
+          type="email"
+          required
+          placeholder="nome@exemplo.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button type="submit" disabled={status.type === 'loading'}>
+          {status.type === 'loading' ? 'Enviando' : 'Entrar na lista'}
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <p className={`form-msg ${status.type}`} role="status">{status.message}</p>
     </form>
   );
 }
@@ -93,46 +79,106 @@ export default function App() {
   return (
     <>
       <header className="nav">
-        <div className="container nav-inner">
-          <a href="#" className="logo">
-            <span className="logo-mark">3D</span> Provador Virtual
-          </a>
+        <div className="wrap nav-inner">
+          <a href="#" className="wordmark">Provador<sup>3D</sup></a>
           <nav>
-            <a href="#recursos">Recursos</a>
-            <a href="#como-funciona">Como funciona</a>
-            <a href="#contato" className="btn-small">Entrar na lista</a>
+            <a href="#metodo">Método</a>
+            <a href="#caimento">Caimento</a>
+            <a href="#lojas">Para lojas</a>
+            <a href="#lista" className="nav-cta">Lista de espera</a>
           </nav>
         </div>
       </header>
 
       <main>
-        <section className="hero">
-          <div className="container hero-inner">
-            <div className="hero-text">
-              <span className="badge">Em breve</span>
+        <section className="hero wrap">
+          <div className="hero-meta">
+            <span>Beta fechado</span>
+            <span>Inscrições abertas</span>
+          </div>
+          <div className="hero-grid">
+            <div className="hero-copy">
               <h1>
-                Experimente roupas em <span className="grad">3D</span> antes de comprar
+                O caimento certo, <em>antes</em> da compra.
               </h1>
-              <p>
-                Um provador virtual que usa um avatar com as suas medidas para mostrar como cada
-                peça veste de verdade. Menos trocas, mais acerto.
+              <p className="lead">
+                O Provador monta um avatar com as suas medidas e veste nele a peça que você quer
+                comprar. Você vê o caimento real, ponto a ponto, e escolhe o tamanho sem palpite.
               </p>
-              <div className="hero-cta">
-                <a href="#contato" className="btn">Entrar na lista de espera</a>
-                <a href="#como-funciona" className="btn ghost">Ver como funciona</a>
+              <div className="hero-actions">
+                <a href="#lista" className="btn">Quero testar <span aria-hidden="true">→</span></a>
+                <a href="#metodo" className="link">Como funciona</a>
               </div>
             </div>
-            <Mannequin />
+            <div className="hero-visual">
+              <FitCard />
+              <p className="caption">Troque o tamanho para ver o caimento mudar.</p>
+            </div>
           </div>
         </section>
 
-        <section id="recursos" className="section">
-          <div className="container">
-            <h2>Recursos</h2>
-            <div className="grid">
-              {features.map((f) => (
-                <article key={f.title} className="card">
-                  <div className="card-icon">{f.icon}</div>
+        <section className="manifesto">
+          <div className="wrap">
+            <span className="kicker">Por quê</span>
+            <p>
+              Comprar roupa pela internet ainda é um palpite. A tabela de medidas não diz como o
+              tecido cai no seu ombro, nem onde a cintura aperta. <em>A gente mostra isso antes de
+              você pagar.</em>
+            </p>
+          </div>
+        </section>
+
+        <section id="metodo" className="section wrap">
+          <div className="section-head">
+            <span className="kicker">Método</span>
+            <h2>Três passos, como numa prova de alfaiate.</h2>
+          </div>
+          <ol className="steps">
+            {steps.map((s) => (
+              <li key={s.n}>
+                <span className="step-n">{s.n}</span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section id="caimento" className="section wrap fitmap">
+          <div className="section-head">
+            <span className="kicker">Mapa de caimento</span>
+            <h2>Cada região da peça, medida contra o seu corpo.</h2>
+          </div>
+          <div className="fitmap-grid">
+            <p className="fitmap-text">
+              Em vez de um único número de tamanho, o Provador compara a peça com o seu corpo em
+              ombro, peito, cintura, quadril e comprimento. O resultado é uma leitura simples:
+              onde está justo, onde está certo e onde sobra.
+            </p>
+            <ul className="legend">
+              {legend.map((l) => (
+                <li key={l.fit}>
+                  <span className={`swatch ${l.fit}`} />
+                  <div>
+                    <h3>{l.name}</h3>
+                    <p>{l.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section id="lojas" className="stores">
+          <div className="wrap">
+            <div className="section-head">
+              <span className="kicker">Para lojas</span>
+              <h2>Um provador dentro da sua página de produto.</h2>
+            </div>
+            <div className="stores-grid">
+              {forStores.map((f, i) => (
+                <article key={f.title}>
+                  <span className="step-n">{String(i + 1).padStart(2, '0')}</span>
                   <h3>{f.title}</h3>
                   <p>{f.text}</p>
                 </article>
@@ -141,32 +187,28 @@ export default function App() {
           </div>
         </section>
 
-        <section id="como-funciona" className="section alt">
-          <div className="container">
-            <h2>Como funciona</h2>
-            <div className="steps">
-              {steps.map((s) => (
-                <div key={s.n} className="step">
-                  <div className="step-n">{s.n}</div>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                </div>
-              ))}
-            </div>
+        <section id="lista" className="section wrap signup">
+          <div>
+            <span className="kicker">Lista de espera</span>
+            <h2>
+              Seja dos primeiros a <em>provar</em>.
+            </h2>
+            <p className="lead">
+              Estamos abrindo o beta aos poucos. Deixe seu e-mail e avisamos quando chegar a sua vez.
+            </p>
           </div>
-        </section>
-
-        <section id="contato" className="section cta">
-          <div className="container narrow">
-            <h2>Seja um dos primeiros a usar</h2>
-            <p>Cadastre seu e-mail e avisamos quando o provador estiver disponível.</p>
-            <Waitlist />
-          </div>
+          <Waitlist />
         </section>
       </main>
 
       <footer className="footer">
-        <div className="container">© {new Date().getFullYear()} Provador Virtual 3D</div>
+        <div className="wrap">
+          <div className="footer-mark">Provador</div>
+          <div className="footer-row">
+            <span>© {new Date().getFullYear()} Provador Virtual 3D</span>
+            <span>Feito para quem compra roupa online</span>
+          </div>
+        </div>
       </footer>
     </>
   );
